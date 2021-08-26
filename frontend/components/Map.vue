@@ -18,15 +18,15 @@
       />
     </div>
     <div id="map" class="w-full h-full"></div>
-    <SearchBar v-if="isPortrait()" class="searchBarMobile" />
+    <SearchBar v-if="isMobile()" class="searchBarMobile" />
   </div>
 </template>
 
 <script>
 import mapboxgl from "mapbox-gl";
-
 import SearchBar from "@/components/SearchBar";
 import { LocationMarkerIcon } from "@heroicons/vue/outline";
+import { isMobile } from "@/functions/functions";
 
 export default {
   components: {
@@ -42,17 +42,11 @@ export default {
       loading: false,
       map: null,
       filtered: [],
+      isMobile,
     };
   },
 
   methods: {
-    isPortrait() {
-      if (window.innerHeight > window.innerWidth) {
-        return true;
-      } else {
-        return false;
-      }
-    },
     buildMap() {
       this.map = new mapboxgl.Map({
         container: "map",
