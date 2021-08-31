@@ -27,33 +27,39 @@ import mapboxgl from "mapbox-gl";
 import SearchBar from "@/components/SearchBar";
 import { LocationMarkerIcon } from "@heroicons/vue/outline";
 import { isMobile } from "@/functions/functions";
+import { ref, computed, onMounted } from "vue";
+import { useStore } from "vuex";
 
 export default {
   components: {
     LocationMarkerIcon,
     SearchBar,
   },
-  mounted() {
-    mapboxgl.accessToken = process.env.VUE_APP_MAPBOX_TOKEN;
-    this.buildMap();
-  },
-  data() {
-    return {
-      loading: false,
-      map: null,
-      filtered: [],
-      isMobile,
-    };
-  },
+  setup() {
+    const store = useStore();
+    let loading = ref(false);
+    let map = ref(null);
+    let filtered = ref([]);
 
-  methods: {
-    buildMap() {
-      this.map = new mapboxgl.Map({
+    function buildMap() {
+      map.value = new mapboxgl.Map({
         container: "map",
         style: process.env.VUE_APP_MAPBOX_STYLE_URL,
       });
-      this.map.addControl(new mapboxgl.NavigationControl());
-    },
+      map.value.addControl(new mapboxgl.NavigationControl());
+    }
+
+    onMounted(() => {
+      mapboxgl.accessToken = process.env.VUE_APP_MAPBOX_TOKEN;
+      buildMap();
+    });
+    return {
+      loading,
+      map,
+      filtered,
+      isMobile,
+      companies: computed(() => store.getters.getCompaniesMerged),
+    };
   },
 };
 </script>
