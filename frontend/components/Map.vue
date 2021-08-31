@@ -24,42 +24,36 @@
 
 <script>
 import mapboxgl from "mapbox-gl";
+import { isMobile } from "@/functions/functions";
 import SearchBar from "@/components/SearchBar";
 import { LocationMarkerIcon } from "@heroicons/vue/outline";
-import { isMobile } from "@/functions/functions";
-import { ref, computed, onMounted } from "vue";
-import { useStore } from "vuex";
 
 export default {
   components: {
     LocationMarkerIcon,
     SearchBar,
   },
-  setup() {
-    const store = useStore();
-    let loading = ref(false);
-    let map = ref(null);
-    let filtered = ref([]);
+  mounted() {
+    mapboxgl.accessToken = process.env.VUE_APP_MAPBOX_TOKEN;
+    this.buildMap();
+  },
+  data() {
+    return {
+      loading: false,
+      map: null,
+      filtered: [],
+      isMobile,
+    };
+  },
 
-    function buildMap() {
-      map.value = new mapboxgl.Map({
+  methods: {
+    buildMap() {
+      this.map = new mapboxgl.Map({
         container: "map",
         style: process.env.VUE_APP_MAPBOX_STYLE_URL,
       });
-      map.value.addControl(new mapboxgl.NavigationControl());
-    }
-
-    onMounted(() => {
-      mapboxgl.accessToken = process.env.VUE_APP_MAPBOX_TOKEN;
-      buildMap();
-    });
-    return {
-      loading,
-      map,
-      filtered,
-      isMobile,
-      companies: computed(() => store.getters.getCompaniesMerged),
-    };
+      this.map.addControl(new mapboxgl.NavigationControl());
+    },
   },
 };
 </script>
